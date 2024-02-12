@@ -1,0 +1,69 @@
+--CREATE DATABASE CDDVD
+--GO
+
+USE CDDVD
+
+--CREATE TABLE Korisnici (
+--    Id INT IDENTITY(1,1) PRIMARY KEY,
+--    Ime NVARCHAR(30),
+--    Prezime NVARCHAR(30),
+--    Oib NVARCHAR(11),
+--	KontaktTelefon NVARCHAR(20),
+--    Spol SMALLINT
+--);
+
+--INSERT INTO Korisnici (Ime, Prezime, Oib, KontaktTelefon, Spol) VALUES
+--('Marija', 'Ivić', '12345678904', '0038598123456789', 1),
+--('Maja', 'Prpić', '12345678905', '0038598123456789', 1),
+--('Ivan', 'Specimen', '12345678907', '0038598123456789', 0)
+
+--CREATE TABLE Mediji (
+--    Id INT IDENTITY(1,1) PRIMARY KEY,
+--    SifraMedija NVARCHAR(10),
+--	Autor VARCHAR(100),
+--	NazivMedija NVARCHAR(100),
+--    GodinaIzdanja INT,
+--	TipMedija SMALLINT
+--);
+
+--INSERT INTO Mediji (SifraMedija, Autor, NazivMedija, GodinaIzdanja, TipMedija) VALUES
+--('1234567890', 'Miso Kovac', 'Svi pjevaju ja ne čujem', 1965, 1),
+--('2345678901', 'Klapa Grdelin', 'Jute san se zajubija', 1998, 1),
+--('3456789012', 'Thompson', 'Bojna Čavoglave', 1989, 0)
+
+--CREATE TABLE Posudbe (
+--    Id INT PRIMARY KEY IDENTITY(1,1),
+--    KorisnikID INT,
+--    MedijID INT,
+--    DatumPosudbe DATE  not null,
+--    DatumVracanja DATE null,
+--    FOREIGN KEY (KorisnikID) REFERENCES Korisnici(Id),
+--    FOREIGN KEY (MedijID) REFERENCES Mediji(Id)
+--);
+
+--INSERT INTO Posudbe (KorisnikID, MedijID, DatumPosudbe, DatumVracanja) VALUES
+--(1, 2, '2024-02-01', '2024-02-12'),
+--(2, 2, '2023-09-19', NULL),
+--(3, 1, '2024-01-12', NULL)
+
+/*Tko je vratio*/
+--SELECT * FROM Posudbe
+--WHERE DatumVracanja IS NOT NULL
+
+/*Nisu vratili*/
+--SELECT Ime, Prezime 
+--FROM Korisnici AS K
+--JOIN Posudbe p ON K.Id = p.KorisnikID
+--WHERE p.DatumVracanja IS NULL
+
+/*Nisu vratili i broj dana koliko nisu vratili*/
+--SELECT k.Ime,
+--	   k.Prezime,
+--	   m.NazivMedija,
+--       p.DatumPosudbe, 
+--       p.DatumVracanja,
+--       DATEDIFF(DAY, p.DatumPosudbe, CASE WHEN p.DatumVracanja IS NULL THEN GETDATE() ELSE p.DatumVracanja END) AS 'NijeVracenoDana'
+--FROM Posudbe p
+--JOIN Korisnici k ON p.KorisnikID = k.Id
+--JOIN Mediji m ON p.MedijID = m.Id
+--WHERE p.DatumVracanja IS NULL
